@@ -9,8 +9,7 @@ import javafx.stage.Stage;
 
 public class GUI extends Application {
     private Button checkButton;
-    private Button loginManufacturerButton;
-    private Button loginSupplierButton;
+    private Button loginButton;
 
 
     public static void main(String[] args) {
@@ -22,13 +21,11 @@ public class GUI extends Application {
     	
         // Create GUI components
         checkButton = new Button("Check");
-        loginManufacturerButton = new Button("Login as Manufacturer");
-        loginSupplierButton = new Button("Login as Supplier");
+        loginButton = new Button("Login");
 
         // Configure event handlers
         checkButton.setOnAction(event -> moveToCheckPage());
-        loginManufacturerButton.setOnAction(event -> moveToMLoginPage());
-        loginSupplierButton.setOnAction(event -> moveToSLoginPage());
+        loginButton.setOnAction(event -> moveToLoginPage());
 
         
         
@@ -37,8 +34,7 @@ public class GUI extends Application {
         root.setPadding(new Insets(10));
         root.getChildren().addAll(
                 checkButton,
-                loginManufacturerButton,
-                loginSupplierButton
+                loginButton
         );
 
         // Set up scene and stage
@@ -53,12 +49,7 @@ public class GUI extends Application {
     	checkPage.display();
     }
     
-    private void moveToMLoginPage() {
-    	LoginPage loginPage = new LoginPage();
-    	loginPage.display();
-    }
-    
-    private void moveToSLoginPage() {
+    private void moveToLoginPage() {
     	LoginPage loginPage = new LoginPage();
     	loginPage.display();
     }
