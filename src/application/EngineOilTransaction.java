@@ -1,6 +1,11 @@
 package application;
 
-public class EngineOilTransaction {
+import java.io.Serializable;
+
+public class EngineOilTransaction implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
 	private ProductInformation productInformation;
     private ManufacturingInformation manufacturingInformation;
     private SupplierInformation supplierInformation;
@@ -8,13 +13,18 @@ public class EngineOilTransaction {
     private String digitalSignature;
 
     public EngineOilTransaction(ProductInformation productInformation, ManufacturingInformation manufacturingInformation,
-                                SupplierInformation supplierInformation, TransactionDetails transactionDetails,
                                 String digitalSignature) {
         this.productInformation = productInformation;
         this.manufacturingInformation = manufacturingInformation;
-        this.supplierInformation = supplierInformation;
-        this.transactionDetails = transactionDetails;
         this.digitalSignature = digitalSignature;
+    }
+    
+    public void addSupplierInformation(SupplierInformation supplierInformation) {
+        this.supplierInformation = supplierInformation;
+    }
+
+    public void addTransactionDetails(TransactionDetails transactionDetails) {
+        this.transactionDetails = transactionDetails;
     }
 
     public ProductInformation getProductInformation() {
@@ -56,4 +66,16 @@ public class EngineOilTransaction {
     public void setDigitalSignature(String digitalSignature) {
         this.digitalSignature = digitalSignature;
     }
+    
+    @Override
+    public String toString() {
+        return "EngineOilTransaction{" +
+                "productInformation=" + productInformation +
+                ", manufacturingInformation=" + manufacturingInformation +
+                ", supplierInformation=" + supplierInformation +
+                ", transactionDetails=" + transactionDetails +
+                ", digitalSignature='" + digitalSignature + '\'' +
+                '}';
+    }
 }
+

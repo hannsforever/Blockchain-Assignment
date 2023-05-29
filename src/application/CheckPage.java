@@ -15,7 +15,7 @@ public class CheckPage{
     private Button backButton;
 
     public void display() {
-    	Stage checkPage = new Stage();
+    	Stage stage = new Stage();
     	
         // Create GUI components
         codeField = new TextField();
@@ -25,7 +25,7 @@ public class CheckPage{
         // Configure event handlers
         checkButton.setOnAction(event -> checkProduct());
         backButton.setOnAction(event -> {
-        	checkPage.close();
+        	stage.close();
         });
 
         // Create layout
@@ -40,9 +40,9 @@ public class CheckPage{
 
         // Set up scene and stage
         Scene scene = new Scene(root, 300, 200);
-        checkPage.setTitle("Check Engine Oil Validity");
-        checkPage.setScene(scene);
-        checkPage.show();
+        stage.setTitle("Check Engine Oil Validity");
+        stage.setScene(scene);
+        stage.show();
     }
 
     private void checkProduct() {
