@@ -2,18 +2,20 @@ package application;
 
 public class ProductInformation {
 	private String brand;
-	private String name;
-	private String code;
-	private String specifications;
-	
-	public ProductInformation(String brand, String name, String code, String specifications) {
-		this.brand = brand;
-		this.name = name;
-		this.code = code;
-		this.specifications = specifications;
-	}
-	
-	public String getBrand() {
+    private String name;
+    private String code;
+    private String specifications;
+    private String manufacturingDate;
+
+    public ProductInformation(String brand, String name, String code, String specifications, String manufacturingDate) {
+        this.brand = brand;
+        this.name = name;
+        this.code = code;
+        this.specifications = specifications;
+        this.manufacturingDate = manufacturingDate;
+    }
+
+    public String getBrand() {
         return brand;
     }
 
@@ -43,6 +45,14 @@ public class ProductInformation {
 
     public void setSpecifications(String specifications) {
         this.specifications = specifications;
+    }
+
+    public String getManufacturingDate() {
+        return manufacturingDate;
+    }
+
+    public void setManufacturingDate(String manufacturingDate) {
+        this.manufacturingDate = manufacturingDate;
     }
 
 }
