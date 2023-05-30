@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MerkleTree {
 
-	private List<EngineOilTransaction> eoTranx;
+	private List<String> eoTranx;
 	private String root = "0";
 	
 	public String getRoot() {
@@ -17,15 +17,15 @@ public class MerkleTree {
 	 * 
 	 * @param eoTranx the list of EngineOilTransaction objects
 	 */
-	private MerkleTree(List<EngineOilTransaction> eoTranx) {
-		this.eoTranx = eoTranx;
+	private MerkleTree(List<String> tranx) {
+		this.eoTranx = tranx;
 	}
 	
 	private static MerkleTree instance;
 	
-	public static MerkleTree getInstance( List<EngineOilTransaction> eoTranx ) {
+	public static MerkleTree getInstance( List<String> tranx ) {
 		if ( instance == null ) {
-			return new MerkleTree(eoTranx);
+			return new MerkleTree(tranx);
 		}
 		return instance;
 	}
@@ -36,7 +36,7 @@ public class MerkleTree {
 	public void build() {
 		List<String> tempLst = new ArrayList<>();
 		
-		for (EngineOilTransaction tranx : eoTranx) {
+		for (String tranx : eoTranx) {
 			tempLst.add(tranx.toString());
 		}
 		

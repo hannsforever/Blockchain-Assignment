@@ -1,0 +1,1 @@
+EngineOilTransaction [merkleRoot=null, eoTranx=[ProductInformation [brand=Valvoline, name=Synpower, code=67890, specifications=5W30, factory=Valvoline US, manufacturingDate=2023-05-31], SupplierInformation [name=TS Tyre , address=Jalan Puchong], 2023-05-31T06:01:30.670557100]]

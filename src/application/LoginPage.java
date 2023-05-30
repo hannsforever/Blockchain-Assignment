@@ -24,7 +24,8 @@ public class LoginPage {
     private Button backButton;
     private Label errorLbl;
     
-    public LoginPage(Stage primaryStage) {
+    @SuppressWarnings("exports")
+	public LoginPage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 

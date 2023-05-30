@@ -1,12 +1,18 @@
 package application;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 
 import com.google.gson.*;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class Blockchain {
 
@@ -58,6 +64,7 @@ public class Blockchain {
 	    }
 		
 		//get()
+		@SuppressWarnings("unchecked")
 		public LinkedList<Block> get(){
 			try(FileInputStream fin = new FileInputStream(this.chainFile);
 					ObjectInputStream in = new ObjectInputStream(fin);
@@ -83,8 +90,27 @@ public class Blockchain {
 		
 		//distribute()
 		public void distribute() {
-			String chain = new GsonBuilder().setPrettyPrinting().create().toJson(db);
+			String chain = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(db);
 			System.out.println(chain);
+		}
+		
+		//downloadLedger()
+		public void downloadLedger() {
+			db = get();
+			String chain = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(db);
+			
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter("latest_ledger.txt"))) {
+	            writer.write(chain);
+
+	            Alert alert = new Alert(AlertType.INFORMATION);
+	            alert.setTitle("Download Ledger");
+	            alert.setHeaderText(null);
+	            alert.setContentText("Downloaded.");
+	            alert.showAndWait();
+	            
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 		}
 	
 }

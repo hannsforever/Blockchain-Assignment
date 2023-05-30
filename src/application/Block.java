@@ -9,7 +9,7 @@ public class Block implements Serializable {
 
     /* relationship implementation */
     public Header header;
-    public EngineOilTransaction eoTranx;
+    private EngineOilTransaction eoTranx;
 
     public Block(String previousHash) {
         /* composition relationship */

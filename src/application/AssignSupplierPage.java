@@ -18,8 +18,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ class DropdownOption {
     private String label;
     private String value;
 
-    public DropdownOption(String label, String value) {
-        this.label = label;
-        this.value = value;
+    public DropdownOption(String code) {
+        this.label = code;
+        this.value = code;
     }
 
     public String getLabel() {
@@ -63,7 +64,7 @@ public class AssignSupplierPage {
         this.productInformationFilePath = productInformationFilePath;
     }
 
-    public void display() {
+    public void display() throws Exception {
         Stage stage = new Stage();
 
         // Create GUI components
@@ -107,26 +108,38 @@ public class AssignSupplierPage {
         loadEngineOilCodes();
     }
 
-    private void extractProductCodes(String filePath) {
+    private void extractProductCodes(String filePath) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+
+            PredefinedCharsSecretKey secretKey = PredefinedCharsSecretKey.getInstance();
+            Key preSecretKey = secretKey.getPreSecretKey();
+            Symmetric symm = new Symmetric();
+
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("ProductInformation")) {
-                    int startIndex = line.indexOf("code=") + 5;
-                    int endIndex = line.indexOf(",", startIndex);
+                String data = symm.decrypt(line, preSecretKey);
+
+                if (data.startsWith("ProductInformation")) {
+                    int startIndex = data.indexOf("code=") + 5;
+                    int endIndex = data.indexOf(",", startIndex);
                     if (endIndex == -1) {
-                        endIndex = line.indexOf("]", startIndex);
+                        endIndex = data.indexOf(" ", startIndex);
+                        if (endIndex == -1) {
+                            endIndex = data.length();
+                        }
                     }
-                    String code = line.substring(startIndex, endIndex);
-                    productCodes.add(new DropdownOption(code, code));  // Create DropdownOption and add to the list
+                    String code = data.substring(startIndex, endIndex).trim();
+                    productCodes.add(new DropdownOption(code));  // Create DropdownOption and add to the list
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void loadEngineOilCodes() {
+
+    private void loadEngineOilCodes() throws Exception {
         extractProductCodes(productInformationFilePath);  // Pass the file path as an argument
         ObservableList<DropdownOption> codeList = FXCollections.observableArrayList();
         
@@ -150,14 +163,8 @@ public class AssignSupplierPage {
             // Get the product information based on the selected product code
             ProductInformation productInformation = getProductInformation(selectedOption.getValue());
 
-            EngineOilTransaction eoTranx = new EngineOilTransaction();
-            
             // Set the supplier information
             SupplierInformation supplierInformation = new SupplierInformation(supplierName, supplierAddress);
-            eoTranx.addSupplierInformation(supplierInformation);
-
-            // Set the product information
-            eoTranx.addProductInformation(productInformation);
 
             Blockchain blockchain;
             
@@ -174,44 +181,67 @@ public class AssignSupplierPage {
             
             // Set the transaction date time
             String dateTimeNow = LocalDateTime.now().toString();
-            eoTranx.addTransactionDateTime(dateTimeNow);
 
-            // Generate digital signature
-            generateDigitalSignature(eoTranx.toString(), dateTimeNow);
+            EngineOilTransaction eoTranx = new EngineOilTransaction();
+            String tranx = productInformation.toString() + ", " + supplierInformation.toString() + ", " + dateTimeNow;
+            eoTranx.add(tranx);
             
+            System.out.println(eoTranx.getEngineOilTransaction());
+
             // Write transaction file with the EngineOilTransaction
-            writeTransactionFile(eoTranx, dateTimeNow);
+            writeTransactionFile(eoTranx.toString(), dateTimeNow);
             
-            // Create a new Block with the EngineOilTransaction object
-            String previousHash = blockchain.get().getLast().getHeader().getCurrentHash();
-            Block block = new Block(previousHash);
-            block.setTransactions(eoTranx);
-            
-            // Add the Block to the blockchain
-            blockchain.nextBlock(block);
-            
-			System.out.println(block);
-			blockchain.distribute();
-            
-            showSuccessDialog(); // Display a success dialog
+            // Generate digital signature
+            if(generateDigitalSignature(eoTranx.toString(), dateTimeNow)) {
+                
+                Block genesis = new Block("0");
+                
+                MerkleTree mt = MerkleTree.getInstance(eoTranx.getEngineOilTransaction());
+        		mt.build();
+        		String root = mt.getRoot();
 
-            System.out.println("Supplier assigned successfully.");
+        		eoTranx.setMerkleRoot(root);
+        		System.out.println("Merkle Root = "+ root);
+        		
+        		Block blck = new Block(genesis.getHeader().getCurrentHash());
+        		blck.setTransactions(eoTranx);
+        		System.out.println(blck);
+                
+                // Add the Block to the blockchain
+                blockchain.nextBlock(blck);
+                
+    			blockchain.distribute();
+                
+                showSuccessDialog(); // Display a success dialog
+
+                System.out.println("Supplier assigned successfully.");
+            } else {
+            	showFailDialog(); // Display a success dialog
+            	System.out.println("Assigning supplier failed.");
+            }
+             
             stage.close();
         }
     }
     
-    private ProductInformation getProductInformation(String productCode) {
+    private ProductInformation getProductInformation(String productCode) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(productInformationFilePath))) {
             String line;
+            
+            PredefinedCharsSecretKey secretKey = PredefinedCharsSecretKey.getInstance();
+            Key preSecretKey = secretKey.getPreSecretKey();
+            Symmetric symm = new Symmetric();
+            
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("ProductInformation") && line.contains("code=" + productCode)) {
+            	String data = symm.decrypt(line, preSecretKey);
+                if (data.startsWith("ProductInformation") && data.contains("code=" + productCode)) {
                     // Extract the required attributes from the line
-                    String brand = extractAttributeValue(line, "brand=");
-                    String name = extractAttributeValue(line, "name=");
-                    String code = extractAttributeValue(line, "code=");
-                    String specifications = extractAttributeValue(line, "specifications=");
-                    String factory = extractAttributeValue(line, "factory=");
-                    String manufacturingDate = extractAttributeValue(line, "manufacturingDate=");
+                    String brand = extractAttributeValue(data, "brand=");
+                    String name = extractAttributeValue(data, "name=");
+                    String code = extractAttributeValue(data, "code=");
+                    String specifications = extractAttributeValue(data, "specifications=");
+                    String factory = extractAttributeValue(data, "factory=");
+                    String manufacturingDate = extractAttributeValue(data, "manufacturingDate=");
 
                     // Create and return the ProductInformation object
                     return new ProductInformation(brand, name, code, specifications, factory, manufacturingDate);
@@ -238,7 +268,7 @@ public class AssignSupplierPage {
     }
 
 
-    private void generateDigitalSignature(String data, String dt) throws Exception {
+    private boolean generateDigitalSignature(String data, String dt) throws Exception {
     	String folderName = "SignedTransaction";
     	File folder = new File(folderName);
         if (!folder.exists()) {
@@ -255,16 +285,38 @@ public class AssignSupplierPage {
         byte[] signedTransaction = signature.getSignature(data, MyKeyPair.getPrivateKey());
         String fileName = "signed_eo_transaction_" + dt.replace(":", "-") + ".txt";
         String filePath = folderName + "/" + fileName;
-        FileWriter writer = new FileWriter(filePath);
-        // Write the transaction details to the file
-        writer.write(signedTransaction.toString());
-        writer.close();
+        
+        Files.write(Paths.get(filePath), signedTransaction);
         
         System.out.println("Transaction signed successfully in " + filePath);
+        return checkDigitalSignature(dt, signature);
+    }
+    
+    private boolean checkDigitalSignature(String dt, DigitalSignature sig) throws Exception {
+    	
+    	String signedFilePath = "SignedTransaction/" + "signed_eo_transaction_" + dt.replace(":", "-") + ".txt";
+    	String FilePath = "EngineOilTransaction/" + "eo_transaction_" + dt.replace(":", "-") + ".txt";
+    	// Load the signed job application form from a file
+        byte[] signedTransactionBytes = Files.readAllBytes(Paths.get(signedFilePath));
+        String transaction = Files.readString(Paths.get(FilePath));
         
+        // Verify the signature of the job application form
+        boolean valid = sig.isTextAndSignatureValid(transaction, signedTransactionBytes, MyKeyPair.getPublicKey());
+        if (valid) {
+            System.out.println("Transaction Digital Signature Check Valid.");
+        } else {
+        	try {
+                Files.deleteIfExists(Paths.get(FilePath));
+                Files.deleteIfExists(Paths.get(signedFilePath));
+                System.out.println("Transaction rejected due to invalid Digital Signature.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return valid;
     }
 
-    private void writeTransactionFile(EngineOilTransaction transaction, String dt) {
+    private void writeTransactionFile(String transaction, String dt) {
         try {
             // Create the EngineOilTransaction folder if it doesn't exist
             String folderName = "EngineOilTransaction";
@@ -274,12 +326,12 @@ public class AssignSupplierPage {
             }
 
             // Generate a unique file name based on the current timestamp
-            String fileName = "engine_oil_transaction_" + dt.replace(":", "-") + ".txt";
+            String fileName = "eo_transaction_" + dt.replace(":", "-") + ".txt";
             String filePath = folderName + "/" + fileName;
             FileWriter writer = new FileWriter(filePath);
             
             // Write the transaction details to the file
-            writer.write(transaction.toString());
+            writer.write(transaction);
             writer.close();
 
             System.out.println("Transaction details saved successfully in " + filePath);
@@ -293,6 +345,14 @@ public class AssignSupplierPage {
         alert.setTitle("Assign Supplier");
         alert.setHeaderText(null);
         alert.setContentText("Supplier assigned successfully.");
+        alert.showAndWait();
+    }
+    
+    private void showFailDialog() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Assign Supplier");
+        alert.setHeaderText(null);
+        alert.setContentText("Supplier assigned failed.");
         alert.showAndWait();
     }
 
