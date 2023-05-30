@@ -12,16 +12,24 @@ import javafx.stage.Stage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class LoginPage {
+	private Stage primaryStage;
+	
     private TextField usernameField;
     private PasswordField passwordField;
     private Button loginButton;
     private Button backButton;
     private Label errorLbl;
+    
+    public LoginPage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 
     public void display() {
-        Stage loginPage = new Stage();
+        Stage stage = new Stage();
 
         // Create GUI components
         usernameField = new TextField();
@@ -33,7 +41,8 @@ public class LoginPage {
         // Configure event handlers
         loginButton.setOnAction(event -> handleLogin());
         backButton.setOnAction(event -> {
-            loginPage.close();
+        	stage.close();
+            primaryStage.show(); // Show the LandingPage
         });
 
         // Create layout
@@ -51,9 +60,9 @@ public class LoginPage {
 
         // Set up scene and stage
         Scene scene = new Scene(root, 300, 250);
-        loginPage.setTitle("Login");
-        loginPage.setScene(scene);
-        loginPage.show();
+        stage.setTitle("Login");
+        stage.setScene(scene);
+        stage.show();
     }
 
     private void handleLogin() {
@@ -65,9 +74,16 @@ public class LoginPage {
 
         if (login.authenticate(username, password)) {
             // Authentication successful
-            // Proceed to the next page or perform necessary actions
-            errorLbl.setText("Authentication successful");
+            // Save session information to a text file
+            saveSessionInformation(username);
 
+            // Proceed to the MainPage
+            MainPage mainPage = new MainPage(primaryStage);
+            mainPage.display();
+
+            // Close the current login page
+            Stage loginPageStage = (Stage) loginButton.getScene().getWindow();
+            loginPageStage.close();
         } else {
             // Clear fields and show error message
             usernameField.clear();
@@ -75,6 +91,7 @@ public class LoginPage {
             errorLbl.setText("Authentication failed");
         }
     }
+
 
     private static class Login {
         private static final String FILENAME = "user_data.txt";
@@ -100,6 +117,16 @@ public class LoginPage {
                 e.printStackTrace();
             }
             return null; // User not found or error occurred
+        }
+    }
+    
+    private void saveSessionInformation(String username) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("session.txt"))) {
+            writer.write(username);
+
+            System.out.println("Session information saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

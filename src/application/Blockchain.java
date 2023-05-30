@@ -6,11 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 public class Blockchain {
 
-	//linkedlist db
+		//linkedlist db
 		private static LinkedList<Block> db = new LinkedList<>();
 		
 		//singleton blockchain instance
@@ -47,6 +47,15 @@ public class Blockchain {
 			db.add(newBlock);
 			persist();
 		}
+		
+		@Override
+	    public String toString() {
+	        StringBuilder sb = new StringBuilder();
+	        for (Block block : db) {
+	            sb.append(block.toString()).append("\n");
+	        }
+	        return sb.toString();
+	    }
 		
 		//get()
 		public LinkedList<Block> get(){

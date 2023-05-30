@@ -1,81 +1,71 @@
 package application;
 
 import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EngineOilTransaction implements Serializable{
+public class EngineOilTransaction implements Serializable {
 	
-	private static final long serialVersionUID = 1L;
-	
-	private ProductInformation productInformation;
-    private ManufacturingInformation manufacturingInformation;
-    private SupplierInformation supplierInformation;
-    private TransactionDetails transactionDetails;
-    private String digitalSignature;
+    private static final long serialVersionUID = 1L;
 
-    public EngineOilTransaction(ProductInformation productInformation, ManufacturingInformation manufacturingInformation,
-                                String digitalSignature) {
-        this.productInformation = productInformation;
-        this.manufacturingInformation = manufacturingInformation;
-        this.digitalSignature = digitalSignature;
+    public String merkleRoot;
+    private List<ProductInformation> productInformationList;
+    private List<SupplierInformation> supplierInformationList;
+    private List<TransactionDetails> transactionDetailsList;
+    private List<String> digitalSignatureList;
+    
+    public EngineOilTransaction() {
+        productInformationList = new ArrayList<>();
+        supplierInformationList = new ArrayList<>();
+        transactionDetailsList = new ArrayList<>();
+        digitalSignatureList = new ArrayList<>();
     }
     
+    public List<ProductInformation> getProductInformationList() {
+        return productInformationList;
+    }
+
+    public void addProductInformation(ProductInformation productInformation) {
+        productInformationList.add(productInformation);
+    }
+
+    public List<SupplierInformation> getSupplierInformationList() {
+        return supplierInformationList;
+    }
+
     public void addSupplierInformation(SupplierInformation supplierInformation) {
-        this.supplierInformation = supplierInformation;
+        supplierInformationList.add(supplierInformation);
+    }
+
+    public List<TransactionDetails> getTransactionDetailsList() {
+        return transactionDetailsList;
     }
 
     public void addTransactionDetails(TransactionDetails transactionDetails) {
-        this.transactionDetails = transactionDetails;
+        transactionDetailsList.add(transactionDetails);
     }
 
-    public ProductInformation getProductInformation() {
-        return productInformation;
+    public List<String> getDigitalSignatureList() {
+        return digitalSignatureList;
     }
 
-    public void setProductInformation(ProductInformation productInformation) {
-        this.productInformation = productInformation;
-    }
-
-    public ManufacturingInformation getManufacturingInformation() {
-        return manufacturingInformation;
-    }
-
-    public void setManufacturingInformation(ManufacturingInformation manufacturingInformation) {
-        this.manufacturingInformation = manufacturingInformation;
-    }
-
-    public SupplierInformation getSupplierInformation() {
-        return supplierInformation;
-    }
-
-    public void setSupplierInformation(SupplierInformation supplierInformation) {
-        this.supplierInformation = supplierInformation;
-    }
-
-    public TransactionDetails getTransactionDetails() {
-        return transactionDetails;
-    }
-
-    public void setTransactionDetails(TransactionDetails transactionDetails) {
-        this.transactionDetails = transactionDetails;
-    }
-
-    public String getDigitalSignature() {
-        return digitalSignature;
-    }
-
-    public void setDigitalSignature(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
+    public void addDigitalSignature(String digitalSignature) {
+        digitalSignatureList.add(digitalSignature);
     }
     
-    @Override
-    public String toString() {
-        return "EngineOilTransaction{" +
-                "productInformation=" + productInformation +
-                ", manufacturingInformation=" + manufacturingInformation +
-                ", supplierInformation=" + supplierInformation +
-                ", transactionDetails=" + transactionDetails +
-                ", digitalSignature='" + digitalSignature + '\'' +
-                '}';
+    public void setMerkleRoot(String root) {
+    	this.merkleRoot = root;
     }
-}
+    
+    public String getMerkleRoot() {
+    	return this.merkleRoot;
+    }
 
+    @Override
+	public String toString() {
+		return "EngineOilTransaction [productInformationList=" + productInformationList + ", supplierInformationList="
+				+ supplierInformationList + ", transactionDetailsList=" + transactionDetailsList
+				+ ", digitalSignatureList=" + digitalSignatureList + "]";
+	}
+}

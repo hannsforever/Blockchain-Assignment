@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MerkleTree {
 
-	private List<String> eoTranx;
+	private List<EngineOilTransaction> eoTranx;
 	private String root = "0";
 	
 	public String getRoot() {
@@ -13,18 +13,17 @@ public class MerkleTree {
 	}
 	
 	/**
-	 * @implNote
 	 * Set the transaction list to the MerkleTree object.
 	 * 
-	 * @param tranxLst
+	 * @param eoTranx the list of EngineOilTransaction objects
 	 */
-	private MerkleTree(List<String> eoTranx) {
-		super();
+	private MerkleTree(List<EngineOilTransaction> eoTranx) {
 		this.eoTranx = eoTranx;
 	}
 	
 	private static MerkleTree instance;
-	public static MerkleTree getInstance( List<String> eoTranx ) {
+	
+	public static MerkleTree getInstance( List<EngineOilTransaction> eoTranx ) {
 		if ( instance == null ) {
 			return new MerkleTree(eoTranx);
 		}
@@ -32,37 +31,32 @@ public class MerkleTree {
 	}
 	
 	/**
-	 * @implNote
 	 * Build merkle tree 
-	 * 
-	 * @implSpec 
-	 * + build() : void
 	 */
 	public void build() {
 		List<String> tempLst = new ArrayList<>();
 		
-		for (String tranx : this.eoTranx) {
-			tempLst.add(tranx);
+		for (EngineOilTransaction tranx : eoTranx) {
+			tempLst.add(tranx.toString());
 		}
 		
-		List<String> hashes = genTranxHashLst( tempLst );
+		List<String> hashes = generateTransactionHashes( tempLst );
 		while (hashes.size() != 1) {
-			hashes = genTranxHashLst( hashes );
+			hashes = generateTransactionHashes( hashes );
 		}
 		this.root = hashes.get(0);
 	}
 	
 	/**
-	 * @implNote
 	 * Generate hashes of transactions 
 	 * 
-	 * @implSpec 
-	 * - genTranxHashLst(List<String>) : List<String>
+     * @param tranxList the list of transaction strings
+     * @return the list of generated transaction hashes
 	 */
-	private List<String> genTranxHashLst(List<String> eoTranx) {
+	private List<String> generateTransactionHashes(List<String> eoTranx) {
 		List<String> hashLst = new ArrayList<>();
 		int i = 0;
-		while( i < eoTranx.size() ) {
+		while( i < eoTranx.size()) {
 			
 			String left = eoTranx.get(i);
 			i++;

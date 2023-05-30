@@ -8,15 +8,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class CheckPage{
-
+public class CheckPage {
+    private Stage primaryStage;
     private TextField codeField;
     private Button checkButton;
     private Button backButton;
 
+    public CheckPage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
     public void display() {
-    	Stage stage = new Stage();
-    	
+        Stage stage = new Stage();
+
         // Create GUI components
         codeField = new TextField();
         checkButton = new Button("Check");
@@ -25,7 +29,8 @@ public class CheckPage{
         // Configure event handlers
         checkButton.setOnAction(event -> checkProduct());
         backButton.setOnAction(event -> {
-        	stage.close();
+            stage.close();
+            primaryStage.show(); // Show the LandingPage
         });
 
         // Create layout
@@ -50,5 +55,5 @@ public class CheckPage{
         // Perform checking logic here
         // You can use a database or hardcoded credentials for simplicity
     }
-	
 }
+

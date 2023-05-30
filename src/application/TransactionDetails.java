@@ -1,21 +1,24 @@
 package application;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
-public class TransactionDetails {
-	private LocalDateTime transactionDateTime;
+public class TransactionDetails implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+    private String transactionDateTime;
     private String supplierName;
 
-    public TransactionDetails(LocalDateTime transactionDateTime, String supplierName) {
+    public TransactionDetails(String transactionDateTime, String supplierName) {
         this.transactionDateTime = transactionDateTime;
         this.supplierName = supplierName;
     }
 
-    public LocalDateTime getTransactionDateTime() {
+    public String getTransactionDateTime() {
         return transactionDateTime;
     }
 
-    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+    public void setTransactionDateTime(String transactionDateTime) {
         this.transactionDateTime = transactionDateTime;
     }
 
@@ -26,4 +29,10 @@ public class TransactionDetails {
     public void setSupplierName(String supplierName) {
         this.supplierName = supplierName;
     }
+
+	@Override
+	public String toString() {
+		return "TransactionDetails [transactionDateTime=" + transactionDateTime + ", supplierName=" + supplierName
+				+ "]";
+	}
 }

@@ -1,17 +1,24 @@
 package application;
 
-public class ProductInformation {
-	private String brand;
+import java.io.Serializable;
+
+public class ProductInformation implements Serializable {
+	
+    private static final long serialVersionUID = 1L;
+    
+    private String brand;
     private String name;
     private String code;
     private String specifications;
+    private String factory;
     private String manufacturingDate;
 
-    public ProductInformation(String brand, String name, String code, String specifications, String manufacturingDate) {
+    public ProductInformation(String brand, String name, String code, String specifications, String factory, String manufacturingDate) {
         this.brand = brand;
         this.name = name;
         this.code = code;
         this.specifications = specifications;
+        this.factory = factory;
         this.manufacturingDate = manufacturingDate;
     }
 
@@ -47,6 +54,14 @@ public class ProductInformation {
         this.specifications = specifications;
     }
 
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
+
     public String getManufacturingDate() {
         return manufacturingDate;
     }
@@ -55,4 +70,9 @@ public class ProductInformation {
         this.manufacturingDate = manufacturingDate;
     }
 
+    @Override
+    public String toString() {
+        return "ProductInformation [brand=" + brand + ", name=" + name + ", code=" + code + ", specifications="
+                + specifications + ", factory=" + factory + ", manufacturingDate=" + manufacturingDate + "]";
+    }
 }
