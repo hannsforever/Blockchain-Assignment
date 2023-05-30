@@ -18,9 +18,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 class DropdownOption {
@@ -73,7 +74,13 @@ public class AssignSupplierPage {
         backButton = new Button("Back");
 
         // Configure event handlers
-        assignSupplierButton.setOnAction(event -> assignSupplier(stage));
+        assignSupplierButton.setOnAction(event -> {
+			try {
+				assignSupplier(stage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
         backButton.setOnAction(event -> stage.close());
 
         // Create layout
@@ -131,7 +138,7 @@ public class AssignSupplierPage {
         productCodeComboBox.setItems(codeList);
     }
 
-    private void assignSupplier(Stage stage) {
+    private void assignSupplier(Stage stage) throws Exception {
         String supplierName = supplierNameField.getText();
         String supplierAddress = supplierAddressField.getText();
         DropdownOption selectedOption = productCodeComboBox.getValue();
@@ -152,19 +159,10 @@ public class AssignSupplierPage {
             // Set the product information
             eoTranx.addProductInformation(productInformation);
 
-            // Set the transaction date time
-            String dateTimeNow = LocalDateTime.now().toString();
-            eoTranx.addTransactionDateTime(dateTimeNow);
-
-            // Generate and set the digital signature
-            String digitalSignature = generateDigitalSignature(eoTranx.toString());
-            eoTranx.addDigitalSignature(digitalSignature);
-
             Blockchain blockchain;
             
             // Check if the master folder exists, create it if it doesn't
             if(!new File(masterFolder).exists()) {
-    			System.err.println("> creating Blockchain binary !");
     			new File(masterFolder).mkdir();
     			
     			// Initialize the blockchain with a genesis block
@@ -174,8 +172,15 @@ public class AssignSupplierPage {
     			blockchain = Blockchain.getInstance(fileName);
     		}
             
+            // Set the transaction date time
+            String dateTimeNow = LocalDateTime.now().toString();
+            eoTranx.addTransactionDateTime(dateTimeNow);
+
+            // Generate digital signature
+            generateDigitalSignature(eoTranx.toString(), dateTimeNow);
+            
             // Write transaction file with the EngineOilTransaction
-            writeTransactionFile(eoTranx);
+            writeTransactionFile(eoTranx, dateTimeNow);
             
             // Create a new Block with the EngineOilTransaction object
             String previousHash = blockchain.get().getLast().getHeader().getCurrentHash();
@@ -233,14 +238,33 @@ public class AssignSupplierPage {
     }
 
 
-    private String generateDigitalSignature(String data) {
-        // Generate the digital signature for the data
-        byte[] signatureBytes = data.getBytes();
-        String digitalSignature = Base64.getEncoder().encodeToString(signatureBytes);
-        return digitalSignature;
+    private void generateDigitalSignature(String data, String dt) throws Exception {
+    	String folderName = "SignedTransaction";
+    	File folder = new File(folderName);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+    	
+    	MyKeyPair.create();
+		byte[] publicKey = MyKeyPair.getPublicKey().getEncoded();
+		byte[] privateKey = MyKeyPair.getPrivateKey().getEncoded();
+		MyKeyPair.put(publicKey, "MyKeyPair/PublicKey");
+		MyKeyPair.put(privateKey, "MyKeyPair/PrivateKey");
+		
+		DigitalSignature signature = new DigitalSignature();
+        byte[] signedTransaction = signature.getSignature(data, MyKeyPair.getPrivateKey());
+        String fileName = "signed_eo_transaction_" + dt.replace(":", "-") + ".txt";
+        String filePath = folderName + "/" + fileName;
+        FileWriter writer = new FileWriter(filePath);
+        // Write the transaction details to the file
+        writer.write(signedTransaction.toString());
+        writer.close();
+        
+        System.out.println("Transaction signed successfully in " + filePath);
+        
     }
 
-    private void writeTransactionFile(EngineOilTransaction transaction) {
+    private void writeTransactionFile(EngineOilTransaction transaction, String dt) {
         try {
             // Create the EngineOilTransaction folder if it doesn't exist
             String folderName = "EngineOilTransaction";
@@ -250,7 +274,7 @@ public class AssignSupplierPage {
             }
 
             // Generate a unique file name based on the current timestamp
-            String fileName = "engine_oil_transaction_" + LocalDateTime.now().toString().replace(":", "-") + ".txt";
+            String fileName = "engine_oil_transaction_" + dt.replace(":", "-") + ".txt";
             String filePath = folderName + "/" + fileName;
             FileWriter writer = new FileWriter(filePath);
             

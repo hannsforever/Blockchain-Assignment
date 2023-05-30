@@ -11,49 +11,39 @@ public class EngineOilTransaction implements Serializable {
 
     public String merkleRoot;
     private final int SIZE = 10;
-    private List<ProductInformation> productInformationList;
-    private List<SupplierInformation> supplierInformationList;
-    private List<String> transactionDateTimeList;
-    private List<String> digitalSignatureList;
+    private List<ProductInformation> productInformation;
+    private List<SupplierInformation> supplierInformation;
+    private List<String> transactionDateTime;
     
     public EngineOilTransaction() {
-        productInformationList = new ArrayList<>(SIZE);
-        supplierInformationList = new ArrayList<>(SIZE);
-        transactionDateTimeList = new ArrayList<>(SIZE);
-        digitalSignatureList = new ArrayList<>(SIZE);
+        productInformation = new ArrayList<>(SIZE);
+        supplierInformation = new ArrayList<>(SIZE);
+        transactionDateTime = new ArrayList<>(SIZE);
     }
     
     public List<ProductInformation> getProductInformationList() {
-        return productInformationList;
+        return productInformation;
     }
 
-    public void addProductInformation(ProductInformation productInformation) {
-        productInformationList.add(productInformation);
+    public void addProductInformation(ProductInformation productInfo) {
+        productInformation.add(productInfo);
     }
 
     public List<SupplierInformation> getSupplierInformationList() {
-        return supplierInformationList;
+        return supplierInformation;
     }
 
-    public void addSupplierInformation(SupplierInformation supplierInformation) {
-        supplierInformationList.add(supplierInformation);
+    public void addSupplierInformation(SupplierInformation supplierInfo) {
+        supplierInformation.add(supplierInfo);
     }
 
     public List<String> getTransactionDateTimeList() {
-		return transactionDateTimeList;
+		return transactionDateTime;
 	}
 
-	public void addTransactionDateTime(String transactionDateTime) {
-		transactionDateTimeList.add(transactionDateTime);
+	public void addTransactionDateTime(String tranxDateTime) {
+		transactionDateTime.add(tranxDateTime);
 	}
-
-    public List<String> getDigitalSignatureList() {
-        return digitalSignatureList;
-    }
-
-    public void addDigitalSignature(String digitalSignature) {
-        digitalSignatureList.add(digitalSignature);
-    }
     
     public void setMerkleRoot(String root) {
     	this.merkleRoot = root;
@@ -65,9 +55,8 @@ public class EngineOilTransaction implements Serializable {
 
     @Override
 	public String toString() {
-		return "EngineOilTransaction [merkleRoot=" + merkleRoot + ", SIZE=" + SIZE + ", productInformationList="
-				+ productInformationList + ", supplierInformationList=" + supplierInformationList
-				+ ", transactionDateTimeList=" + transactionDateTimeList + ", digitalSignatureList="
-				+ digitalSignatureList + "]";
+		return "EngineOilTransaction [merkleRoot=" + merkleRoot + ", SIZE=" + SIZE + ", productInformation="
+				+ productInformation + ", supplierInformation=" + supplierInformation + ", transactionDateTime="
+				+ transactionDateTime + "]";
 	}
 }
