@@ -1,4 +1,4 @@
-ProductInformation brand=LiquiMoly, name=Magnatec, code=11223344, specifications=0W20, factory=Luna Lubricant Sdn Bhd, manufacturingDate=2023-05-30
-ProductInformation brand=Motul, name=Competition, code=0099887766, specifications=15W50, factory=Dyno Lubricant Sdn Bhd, manufacturingDate=2023-05-30
-ProductInformation brand=Petronas, name=Synthium 3000, code=7788994466, specifications=10W30, factory=Petronas Oil and Gas, manufacturingDate=2023-05-30
-ProductInformation brand=testt, name=testt, code=testt, specifications=testt, factory=testt, manufacturingDate=2023-05-30
+sspRC/aH4JnsI+nOBqHA4TXXZyJ+5p7kVtULf4RPeTs6k39/V84+HYsFY0TCdIuI8leoOCh3KWsLkjeqT6uiUOC6MI2F6HQWAnmih5/QWPFjOxC5l6Cv7V4z/ZhVfTcTb6AZyCERSVvWV76RUI6QRBiR3K/qIlCMFWo811LaciKi4P4VC3ANKmAf0cdyN+24
+sspRC/aH4JnsI+nOBqHA4YKSnReDPefypssMngmJn58B8sBeQmotxIMDK8RL/ivBIMZc3RdtrqwjMhYVMHT1t/n6TodgEiyzUTVf00N/UApkMStmOEnOulcZvt+7+9VbtpfqmL3nnI74NJv2vCIJERFcwaujIWm7NI25ZmR2Er0=
+sspRC/aH4JnsI+nOBqHA4VC+y0QlCdNAChLyuCgnkG1dNSNLldkina97I8w+cEH6eImaZpXLCJ0GRFdzjAkwEsp6Mdz77GTswdP19KQCr+uWtE3E7d4UqaGsfj5vF1ZPtpfqmL3nnI74NJv2vCIJERFcwaujIWm7NI25ZmR2Er0=
+sspRC/aH4JnsI+nOBqHA4bRo0RCjdkceaidoJ1l3d2SIlJ38fYAlbKNxSK3/+Pu4Jy6B+BMUzBMjGmEnfb2RJrxdUzJFmhcHUr+NBUoMyXqYosQPDr7mOeBsNpXsMWTftpfqmL3nnI74NJv2vCIJERFcwaujIWm7NI25ZmR2Er0=

@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ class DropdownOption {
     private String label;
     private String value;
 
-    public DropdownOption(String label, String value) {
-        this.label = label;
-        this.value = value;
+    public DropdownOption(String code) {
+        this.label = code;
+        this.value = code;
     }
 
     public String getLabel() {
@@ -63,7 +64,7 @@ public class AssignSupplierPage {
         this.productInformationFilePath = productInformationFilePath;
     }
 
-    public void display() {
+    public void display() throws Exception {
         Stage stage = new Stage();
 
         // Create GUI components
@@ -107,26 +108,38 @@ public class AssignSupplierPage {
         loadEngineOilCodes();
     }
 
-    private void extractProductCodes(String filePath) {
+    private void extractProductCodes(String filePath) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+
+            PredefinedCharsSecretKey secretKey = PredefinedCharsSecretKey.getInstance();
+            Key preSecretKey = secretKey.getPreSecretKey();
+            Symmetric symm = new Symmetric();
+
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("ProductInformation")) {
-                    int startIndex = line.indexOf("code=") + 5;
-                    int endIndex = line.indexOf(",", startIndex);
+                String data = symm.decrypt(line, preSecretKey);
+
+                if (data.startsWith("ProductInformation")) {
+                    int startIndex = data.indexOf("code=") + 5;
+                    int endIndex = data.indexOf(",", startIndex);
                     if (endIndex == -1) {
-                        endIndex = line.indexOf("]", startIndex);
+                        endIndex = data.indexOf(" ", startIndex);
+                        if (endIndex == -1) {
+                            endIndex = data.length();
+                        }
                     }
-                    String code = line.substring(startIndex, endIndex);
-                    productCodes.add(new DropdownOption(code, code));  // Create DropdownOption and add to the list
+                    String code = data.substring(startIndex, endIndex).trim();
+                    productCodes.add(new DropdownOption(code));  // Create DropdownOption and add to the list
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void loadEngineOilCodes() {
+
+    private void loadEngineOilCodes() throws Exception {
         extractProductCodes(productInformationFilePath);  // Pass the file path as an argument
         ObservableList<DropdownOption> codeList = FXCollections.observableArrayList();
         
@@ -204,18 +217,24 @@ public class AssignSupplierPage {
         }
     }
     
-    private ProductInformation getProductInformation(String productCode) {
+    private ProductInformation getProductInformation(String productCode) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(productInformationFilePath))) {
             String line;
+            
+            PredefinedCharsSecretKey secretKey = PredefinedCharsSecretKey.getInstance();
+            Key preSecretKey = secretKey.getPreSecretKey();
+            Symmetric symm = new Symmetric();
+            
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("ProductInformation") && line.contains("code=" + productCode)) {
+            	String data = symm.decrypt(line, preSecretKey);
+                if (data.startsWith("ProductInformation") && data.contains("code=" + productCode)) {
                     // Extract the required attributes from the line
-                    String brand = extractAttributeValue(line, "brand=");
-                    String name = extractAttributeValue(line, "name=");
-                    String code = extractAttributeValue(line, "code=");
-                    String specifications = extractAttributeValue(line, "specifications=");
-                    String factory = extractAttributeValue(line, "factory=");
-                    String manufacturingDate = extractAttributeValue(line, "manufacturingDate=");
+                    String brand = extractAttributeValue(data, "brand=");
+                    String name = extractAttributeValue(data, "name=");
+                    String code = extractAttributeValue(data, "code=");
+                    String specifications = extractAttributeValue(data, "specifications=");
+                    String factory = extractAttributeValue(data, "factory=");
+                    String manufacturingDate = extractAttributeValue(data, "manufacturingDate=");
 
                     // Create and return the ProductInformation object
                     return new ProductInformation(brand, name, code, specifications, factory, manufacturingDate);
@@ -273,8 +292,6 @@ public class AssignSupplierPage {
     	// Load the signed job application form from a file
         byte[] signedTransactionBytes = Files.readAllBytes(Paths.get(signedFilePath));
         String transaction = Files.readString(Paths.get(FilePath));
-        System.out.println(transaction);
-        System.out.println(signedTransactionBytes);
         
         // Verify the signature of the job application form
         boolean valid = sig.isTextAndSignatureValid(transaction, signedTransactionBytes, MyKeyPair.getPublicKey());

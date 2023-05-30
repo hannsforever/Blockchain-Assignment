@@ -26,7 +26,13 @@ public class MainPage {
 
         // Configure event handlers
         addProductButton.setOnAction(event -> openAddProductPage());
-        assignSupplierButton.setOnAction(event -> openAssignSupplierPage());
+        assignSupplierButton.setOnAction(event -> {
+			try {
+				openAssignSupplierPage();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
         logoutButton.setOnAction(event -> {
         	stage.close();
         	logout(); 
@@ -50,7 +56,7 @@ public class MainPage {
         addProductPage.display();
     }
 
-    private void openAssignSupplierPage() {
+    private void openAssignSupplierPage() throws Exception {
         AssignSupplierPage assignSupplierPage = new AssignSupplierPage("product_information.txt");
         assignSupplierPage.display();
     }

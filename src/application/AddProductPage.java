@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -38,7 +39,13 @@ public class AddProductPage {
         backButton = new Button("Back");
 
         // Configure event handlers
-        saveButton.setOnAction(event -> saveProductInformation(stage));
+        saveButton.setOnAction(event -> {
+			try {
+				saveProductInformation(stage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
         backButton.setOnAction(event -> stage.close());
 
         // Create layout
@@ -65,8 +72,22 @@ public class AddProductPage {
         stage.setScene(scene);
         stage.show();
     }
-
-    private void saveProductInformation(Stage stage) {
+    
+    private void saveProductInformation(Stage stage) throws Exception {
+    	PredefinedCharsSecretKey preSKey = new PredefinedCharsSecretKey();
+    	
+    	//Prefefined Secret Key and Random Secret Key
+    	Key preSecretKey = preSKey.getPreSecretKey();
+    	
+    	if (preSecretKey != null) {
+    		System.out.println("Predefined secret key generation successful.");
+		} else {
+			System.out.println("Failed to generate predefined secret key.");
+		}
+		
+		//Symmetric key
+		Symmetric symm = new Symmetric();
+		
         String productName = productNameField.getText();
         String brand = brandField.getText();
         String code = codeField.getText();
@@ -79,7 +100,9 @@ public class AddProductPage {
 
         // Save the product information to a text file
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("product_information.txt", true))) {
-            writer.write(productInformation.toString().replaceAll("\\[|\\]", "")); // Update to the modified toString() format
+        	String info = productInformation.toString().replaceAll("\\[|\\]", "");
+        	String encryptedInfo = symm.encrypt(info, preSecretKey);
+            writer.write(encryptedInfo);
             writer.newLine();
 
             showSuccessDialog(); //showing product added successfull
