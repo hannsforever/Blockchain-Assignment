@@ -10,16 +10,17 @@ public class EngineOilTransaction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public String merkleRoot;
+    private final int SIZE = 10;
     private List<ProductInformation> productInformationList;
     private List<SupplierInformation> supplierInformationList;
-    private List<TransactionDetails> transactionDetailsList;
+    private List<String> transactionDateTimeList;
     private List<String> digitalSignatureList;
     
     public EngineOilTransaction() {
-        productInformationList = new ArrayList<>();
-        supplierInformationList = new ArrayList<>();
-        transactionDetailsList = new ArrayList<>();
-        digitalSignatureList = new ArrayList<>();
+        productInformationList = new ArrayList<>(SIZE);
+        supplierInformationList = new ArrayList<>(SIZE);
+        transactionDateTimeList = new ArrayList<>(SIZE);
+        digitalSignatureList = new ArrayList<>(SIZE);
     }
     
     public List<ProductInformation> getProductInformationList() {
@@ -38,13 +39,13 @@ public class EngineOilTransaction implements Serializable {
         supplierInformationList.add(supplierInformation);
     }
 
-    public List<TransactionDetails> getTransactionDetailsList() {
-        return transactionDetailsList;
-    }
+    public List<String> getTransactionDateTimeList() {
+		return transactionDateTimeList;
+	}
 
-    public void addTransactionDetails(TransactionDetails transactionDetails) {
-        transactionDetailsList.add(transactionDetails);
-    }
+	public void addTransactionDateTime(String transactionDateTime) {
+		transactionDateTimeList.add(transactionDateTime);
+	}
 
     public List<String> getDigitalSignatureList() {
         return digitalSignatureList;
@@ -64,8 +65,9 @@ public class EngineOilTransaction implements Serializable {
 
     @Override
 	public String toString() {
-		return "EngineOilTransaction [productInformationList=" + productInformationList + ", supplierInformationList="
-				+ supplierInformationList + ", transactionDetailsList=" + transactionDetailsList
-				+ ", digitalSignatureList=" + digitalSignatureList + "]";
+		return "EngineOilTransaction [merkleRoot=" + merkleRoot + ", SIZE=" + SIZE + ", productInformationList="
+				+ productInformationList + ", supplierInformationList=" + supplierInformationList
+				+ ", transactionDateTimeList=" + transactionDateTimeList + ", digitalSignatureList="
+				+ digitalSignatureList + "]";
 	}
 }

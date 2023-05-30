@@ -152,10 +152,9 @@ public class AssignSupplierPage {
             // Set the product information
             eoTranx.addProductInformation(productInformation);
 
-            // Set the transaction details
+            // Set the transaction date time
             String dateTimeNow = LocalDateTime.now().toString();
-            TransactionDetails transactionDetails = new TransactionDetails(dateTimeNow, supplierName);
-            eoTranx.addTransactionDetails(transactionDetails);
+            eoTranx.addTransactionDateTime(dateTimeNow);
 
             // Generate and set the digital signature
             String digitalSignature = generateDigitalSignature(eoTranx.toString());
