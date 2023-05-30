@@ -1,6 +1,11 @@
 package application;
 
-public class SupplierInformation {
+import java.io.Serializable;
+
+public class SupplierInformation implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private String address;
 	
@@ -24,4 +29,9 @@ public class SupplierInformation {
     public void setAddress(String address) {
         this.address = address;
     }
+
+	@Override
+	public String toString() {
+		return "SupplierInformation [name=" + name + ", address=" + address + "]";
+	}
 }

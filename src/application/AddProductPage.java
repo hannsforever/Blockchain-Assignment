@@ -2,6 +2,8 @@ package application;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -11,30 +13,32 @@ import javafx.stage.Stage;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AddProductPage {
     private TextField productNameField;
     private TextField brandField;
     private TextField codeField;
     private TextField specificationsField;
-    private TextField manufacturingDateField;
+    private TextField factoryField;
     private Button saveButton;
     private Button backButton;
 
     public void display() {
         Stage stage = new Stage();
 
-     // Create GUI components
+        // Create GUI components
         productNameField = new TextField();
         brandField = new TextField();
         codeField = new TextField();
         specificationsField = new TextField();
-        manufacturingDateField = new TextField();
+        factoryField = new TextField();
         saveButton = new Button("Save");
         backButton = new Button("Back");
 
         // Configure event handlers
-        saveButton.setOnAction(event -> saveProductInformation());
+        saveButton.setOnAction(event -> saveProductInformation(stage));
         backButton.setOnAction(event -> stage.close());
 
         // Create layout
@@ -49,33 +53,56 @@ public class AddProductPage {
                 codeField,
                 new Label("Specifications:"),
                 specificationsField,
-                new Label("Manufacturing Date:"),
-                manufacturingDateField,
+                new Label("Factory:"),
+                factoryField,
                 saveButton,
                 backButton
         );
 
-
         // Set up scene and stage
-        Scene scene = new Scene(root, 300, 200);
+        Scene scene = new Scene(root, 300, 400);
         stage.setTitle("Add Product Information");
         stage.setScene(scene);
         stage.show();
     }
 
-    private void saveProductInformation() {
+    private void saveProductInformation(Stage stage) {
         String productName = productNameField.getText();
         String brand = brandField.getText();
         String code = codeField.getText();
         String specifications = specificationsField.getText();
-        String manufacturingDate = manufacturingDateField.getText();
+        String factory = factoryField.getText();
+        String manufacturingDate = getCurrentDate();
 
         // Create a new instance of ProductInformation
-        ProductInformation productInformation = new ProductInformation(brand, productName, code, specifications, manufacturingDate);
+        ProductInformation productInformation = new ProductInformation(brand, productName, code, specifications, factory, manufacturingDate);
 
-        // TODO: Store the productInformation object or pass it to another component for further processing
+        // Save the product information to a text file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product_information.txt", true))) {
+            writer.write(productInformation.toString().replaceAll("\\[|\\]", "")); // Update to the modified toString() format
+            writer.newLine();
 
-        System.out.println("Product information saved successfully.");
+            showSuccessDialog(); //showing product added successfull
+            
+            System.out.println("Product information saved successfully.");
+            stage.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    private String getCurrentDate() {
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(date);
+    }
+    
+    private void showSuccessDialog() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Add Product");
+        alert.setHeaderText(null);
+        alert.setContentText("Product added successfully.");
+        alert.showAndWait();
+    }
+    
 }
