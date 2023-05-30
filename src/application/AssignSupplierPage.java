@@ -163,14 +163,8 @@ public class AssignSupplierPage {
             // Get the product information based on the selected product code
             ProductInformation productInformation = getProductInformation(selectedOption.getValue());
 
-            EngineOilTransaction eoTranx = new EngineOilTransaction();
-            
             // Set the supplier information
             SupplierInformation supplierInformation = new SupplierInformation(supplierName, supplierAddress);
-            eoTranx.addSupplierInformation(supplierInformation);
-
-            // Set the product information
-            eoTranx.addProductInformation(productInformation);
 
             Blockchain blockchain;
             
@@ -187,22 +181,35 @@ public class AssignSupplierPage {
             
             // Set the transaction date time
             String dateTimeNow = LocalDateTime.now().toString();
-            eoTranx.addTransactionDateTime(dateTimeNow);
+
+            EngineOilTransaction eoTranx = new EngineOilTransaction();
+            String tranx = productInformation.toString() + ", " + supplierInformation.toString() + ", " + dateTimeNow;
+            eoTranx.add(tranx);
+            
+            System.out.println(eoTranx.getEngineOilTransaction());
 
             // Write transaction file with the EngineOilTransaction
-            writeTransactionFile(eoTranx, dateTimeNow);
+            writeTransactionFile(eoTranx.toString(), dateTimeNow);
             
             // Generate digital signature
             if(generateDigitalSignature(eoTranx.toString(), dateTimeNow)) {
-            	// Create a new Block with the EngineOilTransaction object
-                String previousHash = blockchain.get().getLast().getHeader().getCurrentHash();
-                Block block = new Block(previousHash);
-                block.setTransactions(eoTranx);
+                
+                Block genesis = new Block("0");
+                
+                MerkleTree mt = MerkleTree.getInstance(eoTranx.getEngineOilTransaction());
+        		mt.build();
+        		String root = mt.getRoot();
+
+        		eoTranx.setMerkleRoot(root);
+        		System.out.println("Merkle Root = "+ root);
+        		
+        		Block blck = new Block(genesis.getHeader().getCurrentHash());
+        		blck.setTransactions(eoTranx);
+        		System.out.println(blck);
                 
                 // Add the Block to the blockchain
-                blockchain.nextBlock(block);
+                blockchain.nextBlock(blck);
                 
-    			System.out.println(block);
     			blockchain.distribute();
                 
                 showSuccessDialog(); // Display a success dialog
@@ -309,7 +316,7 @@ public class AssignSupplierPage {
         return valid;
     }
 
-    private void writeTransactionFile(EngineOilTransaction transaction, String dt) {
+    private void writeTransactionFile(String transaction, String dt) {
         try {
             // Create the EngineOilTransaction folder if it doesn't exist
             String folderName = "EngineOilTransaction";
@@ -324,7 +331,7 @@ public class AssignSupplierPage {
             FileWriter writer = new FileWriter(filePath);
             
             // Write the transaction details to the file
-            writer.write(transaction.toString());
+            writer.write(transaction);
             writer.close();
 
             System.out.println("Transaction details saved successfully in " + filePath);

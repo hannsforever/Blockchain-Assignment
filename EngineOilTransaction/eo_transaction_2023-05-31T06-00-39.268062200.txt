@@ -1,0 +1,1 @@
+EngineOilTransaction [merkleRoot=null, eoTranx=[ProductInformation [brand=Motul, name=X-Clean, code=24680, specifications=5W30, factory=Motul Germany, manufacturingDate=2023-05-31], SupplierInformation [name=XD AutoWerks, address=Batu Cave], 2023-05-31T06:00:39.268062200]]

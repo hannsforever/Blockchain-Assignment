@@ -1,1 +1,2 @@
 admin,$2a$12$.3ZOvmc0.1TwGRj56J2oYe/DK1rnx2cLE1s9mWYLth9jk8EoyaNJC
+user,$2a$12$R4jvW.B9tTlxl1KI4ecuuO.gC1SBoh.8VcDntTMTd4HiqB6bVfpeq

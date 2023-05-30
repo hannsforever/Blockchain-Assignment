@@ -12,7 +12,8 @@ public class MainPage {
     private Stage primaryStage;
     
 
-    public MainPage(Stage primaryStage) {
+    @SuppressWarnings("exports")
+	public MainPage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
@@ -22,6 +23,7 @@ public class MainPage {
         // Create GUI components
         Button addProductButton = new Button("Add Product");
         Button assignSupplierButton = new Button("Assign Supplier");
+        Button downloadLedgerButton = new Button("Download Ledger");
         Button logoutButton = new Button("Logout");
 
         // Configure event handlers
@@ -33,6 +35,7 @@ public class MainPage {
 				e.printStackTrace();
 			}
 		});
+        downloadLedgerButton.setOnAction(event -> getLedger());
         logoutButton.setOnAction(event -> {
         	stage.close();
         	logout(); 
@@ -42,7 +45,7 @@ public class MainPage {
         // Create layout
         VBox root = new VBox(10);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(addProductButton, assignSupplierButton, logoutButton);
+        root.getChildren().addAll(addProductButton, assignSupplierButton, downloadLedgerButton, logoutButton);
 
         // Set up scene and stage
         Scene scene = new Scene(root, 200, 150);
@@ -51,7 +54,24 @@ public class MainPage {
         stage.show();
     }
 
-    private void openAddProductPage() {
+    private void getLedger() {
+    	Blockchain blockchain;
+        
+        // Check if the master folder exists, create it if it doesn't
+        if(!new File("master").exists()) {
+			new File("master").mkdir();
+			
+			// Initialize the blockchain with a genesis block
+	        blockchain = Blockchain.getInstance("master/chain.bin");
+	        blockchain.genesis();
+		} else {
+			blockchain = Blockchain.getInstance("master/chain.bin");
+		}
+
+        blockchain.downloadLedger();
+	}
+
+	private void openAddProductPage() {
         AddProductPage addProductPage = new AddProductPage();
         addProductPage.display();
     }
