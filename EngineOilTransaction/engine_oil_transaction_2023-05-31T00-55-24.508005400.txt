@@ -1,1 +1,0 @@
-EngineOilTransaction [merkleRoot=null, SIZE=10, productInformation=[ProductInformation [brand=testt, name=testt, code=testt, specifications=testt, factory=testt, manufacturingDate=2023-05-30]], supplierInformation=[SupplierInformation [name=aa, address=aa]], transactionDateTime=[2023-05-31T00:55:23.414110100]]
