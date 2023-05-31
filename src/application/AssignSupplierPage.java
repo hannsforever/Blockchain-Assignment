@@ -224,7 +224,7 @@ public class AssignSupplierPage {
         }
     }
     
-    private ProductInformation getProductInformation(String productCode) throws Exception {
+    public ProductInformation getProductInformation(String productCode) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(productInformationFilePath))) {
             String line;
             
